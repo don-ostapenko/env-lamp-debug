@@ -1,0 +1,41 @@
+version: "3.4"
+services:
+    web:
+        build: ./php
+        ports:
+            - "8001:80"
+        volumes:
+            - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+        environment:
+            XDEBUG_CONFIG: "remote_host=host.docker.internal remote_enable=1"
+            PHP_IDE_CONFIG: "serverName=Docker"
+        links:
+            - db
+        networks:
+            - default
+    db:
+        image: mysql:8.0.18
+        ports:
+            - "3306:3306"
+        restart: always
+        environment:
+            MYSQL_DATABASE: testDb
+            MYSQL_USER: root
+            MYSQL_PASSWORD: 123
+            MYSQL_ROOT_PASSWORD: 123
+        volumes:
+            - ./dump:/var/lib/mysql
+        networks:
+            - default
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        links:
+            - db
+        ports:
+            - 8000:80
+        restart: always
+        environment:
+            MYSQL_DATABASE: testDb
+            MYSQL_USER: root
+            MYSQL_PASSWORD: 123
+            MYSQL_ROOT_PASSWORD: 123
